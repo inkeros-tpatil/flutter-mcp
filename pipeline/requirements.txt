@@ -1,0 +1,9 @@
+fastmcp-slim[server]>=3.4.2
+asyncpg>=0.31.0
+opentelemetry-sdk>=1.25.0
+opentelemetry-exporter-otlp-proto-grpc>=1.25.0
+fastapi
+uvicorn
+mcp
+arize-phoenix>=4.0.0
+pandas>=2.0.0

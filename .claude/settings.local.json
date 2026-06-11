@@ -1,0 +1,7 @@
+{
+  "enabledMcpjsonServers": [
+    "postgres",
+    "dart"
+  ],
+  "enableAllProjectMcpServers": true
+}

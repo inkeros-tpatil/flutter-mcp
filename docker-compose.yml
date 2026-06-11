@@ -1,0 +1,64 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: dev_postgres
+    environment:
+      POSTGRES_USER: devuser
+      POSTGRES_PASSWORD: devpassword
+      POSTGRES_DB: devdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U devuser -d devdb"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  phoenix:
+    image: arizephoenix/phoenix:latest
+    container_name: dev_phoenix
+    ports:
+      - "6006:6006"
+      - "4317:4317"
+      - "4318:4318"
+
+  mcp:
+    build: ./pipeline
+    container_name: dev_mcp
+    environment:
+      DATABASE_URL: postgresql://devuser:devpassword@postgres:5432/devdb
+      MCP_TRANSPORT: sse
+      MCP_PORT: 8000
+      PHOENIX_ENDPOINT: http://phoenix:4317
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      phoenix:
+        condition: service_started
+
+  monitor:
+    image: python:3.12-slim
+    container_name: dev_monitor
+    working_dir: /app
+    volumes:
+      - ./monitoring:/app
+    environment:
+      PHOENIX_ENDPOINT: http://phoenix:6006
+      PHOENIX_PROJECT: default
+      HEALTH_WINDOW_HOURS: "24"
+    command: >
+      sh -c "pip install -q -r requirements.txt &&
+             while true; do python health.py; sleep 86400; done"
+    depends_on:
+      phoenix:
+        condition: service_started
+    restart: unless-stopped
+    profiles:
+      - monitor
+
+volumes:
+  postgres_data:
