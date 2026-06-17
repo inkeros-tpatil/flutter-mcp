@@ -1,5 +1,5 @@
 name: demo_app
-description: "A demo Flutter application with clean architecture and BLoC."
+description: "Recruitment Tool"
 publish_to: 'none'
 version: 1.0.0+1
 
