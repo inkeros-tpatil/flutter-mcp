@@ -1,4 +1,4 @@
-# development-pipeline
+# Flutter-MCP Development-pipeline
 
 A local development environment for the **Recruitment Tool** Flutter application. It provides:
 
